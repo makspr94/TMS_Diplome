@@ -11,9 +11,15 @@ export function isPost (obj: any): obj is IPostData{
     && "body" in obj
 };
 
+export interface INewPostCreated{
+    userId?: number;
+    title?: string;
+    body?: string;
+}
+
 
 export interface ICommentData{
-    userId: number,
+    postId: number,
     id: number,
     name: string,
     email: string,
