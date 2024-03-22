@@ -1,3 +1,4 @@
+import { photoForCreationAlbum5 } from "../../data/photos/photosTestData";
 import {get, post, patch, del} from  "../api";
 
 
@@ -29,6 +30,11 @@ class Photos {
         let allAlbumsIdArray: number[] = this.getAllUniqueValuesByKey('albumId', await this.getAll());
         let randomAlbumId: number = Math.floor(Math.random()*allAlbumsIdArray.length);
         return randomAlbumId;
+    };
+    
+
+    async createNewPhoto(requestBody: object){
+        return await post(this.path, requestBody);
     };
 
     getAllUniqueValuesByKey(key: string, response){

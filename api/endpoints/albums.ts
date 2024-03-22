@@ -33,7 +33,7 @@ class Albums{
         return randomUserId;
     };
 
-    async getNonExistentPostId(){
+    async getNonExistentAlbumId(){
         return (await this.getAll()).data.length + 1; 
     }
 

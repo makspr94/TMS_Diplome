@@ -38,11 +38,11 @@ describe ("albums tests", () => {
     //- Пользователь может добавить новый альбом
     test ('User creates new album ', async () => {
         const randomUserId: number = await albums.getRandomUserId();
-        const nonExistentPostId: number = await albums.getNonExistentPostId();
+        const nonExistentAlbumId: number = await albums.getNonExistentAlbumId();
         const response = await albums.createNewAlbumByUser(randomUserId);
         expect(response.status).toEqual(201);
         expect(isAlbum(response.data)).toBeTruthy();
-        expect(nonExistentPostId).toEqual(response.data.id);
+        expect(nonExistentAlbumId).toEqual(response.data.id);
     })
 
 });

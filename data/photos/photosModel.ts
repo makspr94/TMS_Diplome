@@ -13,3 +13,10 @@ export interface IPhoto {
     && "url" in obj 
     && "thumbnailUrl" in obj 
 };
+
+export interface IPhotoForCreation {
+    albumId?: number,
+    title?: string,
+    url?: string,
+    thumbnailUrl?: string
+}
