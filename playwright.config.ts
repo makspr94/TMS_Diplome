@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -32,20 +33,34 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    //{name: 'setup', testMatch: /.*\.setup\.ts/ },
+
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
+      use: { ...devices['Desktop Chrome'],
+      //storageState: 'data/.auth/user.json',
+      viewport: { width: 1912, height: 958 } },
+      //dependencies: ['setup'],
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
     },
+    
+  
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+
+  ///
+
+
+  ///
+
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {
