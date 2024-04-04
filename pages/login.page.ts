@@ -1,4 +1,5 @@
 import { BasePage } from "./page";
+import { RegistrationPage } from "./registration.page";
 
 export class LoginPage extends BasePage {
     // Locators
@@ -7,13 +8,15 @@ export class LoginPage extends BasePage {
     private logInButtonLocator = "//button[contains(@class,'auth-button_primary')]";
     private captchaFrameLocator = "//*[contains(@class,'auth-form__captcha')]";
     private authFormLocator = "//*[contains(@class, 'auth-form__body')]";
+    private registerButtonLocator = "//a[contains(text(), 'Зарегистрироваться на Onlíner')]";
+
 
     // Elements
     private get loginField() {
         return this.page.locator(this.loginFieldLocator);
     }
 
-    get authForm (){
+    get loginForm (){
         return this.page.locator(this.authFormLocator);
     }
 
@@ -29,6 +32,10 @@ export class LoginPage extends BasePage {
         return this.page.locator(this.captchaFrameLocator);
     }
 
+    private get registerButton (){
+        return this.page.locator(this.registerButtonLocator);
+    }
+
     // Methods
 
     async logIn(login: string, password: string) {
@@ -39,5 +46,10 @@ export class LoginPage extends BasePage {
 
     async waitCapchaFrameAppears() {
         return await this.captchaFrame.waitFor( { state: "visible", timeout: 5000 });
+    }
+
+    async openRegisterForm (){
+        await this.registerButton.click();
+        return new RegistrationPage(this.page);
     }
 }

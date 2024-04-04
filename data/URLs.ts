@@ -1,0 +1,1 @@
+export const mainPageUrl: string = 'https://www.onliner.by/';
