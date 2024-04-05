@@ -9,8 +9,11 @@ export class RegistrationPage extends BasePage {
     private repeatPasswordLocator = "//input[contains(@type, 'password') and contains(@placeholder, 'Повторите пароль')]";
     private policyCheckboxLocator = "//span[contains(@class, 'auth-checkbox__faux')]";
     private regButtonLocator = "//button[contains(@type, 'submit')]";
-
-
+    private goToMailButtonLocator = "//a[contains(text(), 'Перейти в почту')]";
+    private passwordErrorMessageLocator = "//div[div/div/input[contains(@type, 'password') and contains(@placeholder, 'Придумайте пароль')]]//div[contains(text(), 'Укажите пароль')]";
+    private repeatPasswordErrorMessageLocator = "//div[div/div/input[contains(@type, 'password') and contains(@placeholder, 'Повторите пароль')]]//div[contains(text(), 'Укажите пароль')]";
+    private secureBoxMessageLocator = "//div[contains(text(), 'Очень надежный пароль')]";
+    private confitmEmailFormLocator = "//div[@class='auth-form__body']//div[contains(text(), 'Подтвердите') and contains(text(),'ваш')]"
     // Elements
 
     get regForm (){
@@ -36,6 +39,28 @@ export class RegistrationPage extends BasePage {
     get regButton (){
         return this.page.locator(this.regButtonLocator);
     }
+
+    get passwordErrorMessage (){
+        return this.page.locator(this.passwordErrorMessageLocator);
+    }
+
+    get repeatPasswordErrorMessage(){
+        return this.page.locator(this.repeatPasswordErrorMessageLocator);
+    }
+
+    get secureBoxMessage(){
+        return this.page.locator(this.secureBoxMessageLocator);
+    }
+    
+    get confirmEmailForm(){
+        return this.page.locator(this.confitmEmailFormLocator);
+    }
+
+    get goToMailButton (){
+        return this.page.locator(this.goToMailButtonLocator);
+    }
+
+    
    
     // Methods
 
@@ -58,6 +83,11 @@ export class RegistrationPage extends BasePage {
         })
         return computedStyles;
     }
+
+    async getSecureMessageTextContent(): Promise<string|null> {
+        return await this.secureBoxMessage.textContent();
+    }
+
 
     // async logIn(login: string, password: string) {
     //     await this.loginField.fill(login);

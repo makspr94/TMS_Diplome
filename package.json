@@ -5,12 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "npx playwright test --headed",
-    "test-headless": "npx playwright test"},
+    "test-headless": "npx playwright test"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.42.1",
     "@types/node": "^20.11.30"
+  },
+  "dependencies": {
+    "random-email": "^1.0.3",
+    "randomstring": "^1.3.0"
   }
 }
