@@ -31,26 +31,18 @@ test.describe ("Onliner tests with authonticated user", async () => {
     //     // mainPage = new MainPage(page);
     //   });
 
-    test.skip('login with valid credentials', async ({page, context})=>{
+    test('login with valid credentials', async ({page, context})=>{
         await page.goto(mainPageUrl);
         mainPage = new MainPage(page);
         let loginPage = await mainPage.openLoginPage();
         await expect(loginPage.loginForm).toBeVisible();
         await loginPage.logIn(validUser.email, validUser.password);
+        await page.bringToFront();
         await expect(mainPage.userAvatar).toBeVisible({timeout:0});
         await page.context().storageState({path:authFile});
         const cookies = await page.context().cookies();
         fs.writeFileSync('./data/.auth/cookies.json', JSON.stringify(cookies));
        
-        
-        
-        await page.waitForTimeout(5000);
-
-    
-
-        //const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf-8'));
-        //console.log(cookies);
-        //await context.addCookies (cookies);
     })
 
    
