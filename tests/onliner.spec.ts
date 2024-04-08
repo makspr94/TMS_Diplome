@@ -1,7 +1,7 @@
 import { test, expect, Page, chromium } from '@playwright/test';
 import { MainPage } from '../pages/main.page';
 import { validUser } from '../data/userData';
-import { mainPageUrl } from '../data/URLs';
+import { URLs } from '../data/URLs';
 import { randomEmail } from '../helpers/random';
 import { randomString } from '../helpers/random';
 import { NewsPage } from '../pages/news.page';
@@ -21,13 +21,13 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
        let headerMenu: HeaderMenu
 
     test ('login with valid credentials', async ({page, context})=>{
-        await page.goto(mainPageUrl);
+        await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
         let loginPage = await mainPage.openLoginPage();
         await expect(loginPage.loginForm).toBeVisible();
         await loginPage.logIn(validUser.email, validUser.password);
         await page.bringToFront();
-        await page.pause();
+        await page.pause(); //pause for CAPTCHA
         await expect(mainPage.userAvatar).toBeVisible();
         //await page.context().storageState({path:authFile});
         const cookies = await page.context().cookies();
@@ -40,13 +40,11 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
         const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         
-        await page.goto(mainPageUrl);
+        await page.goto(URLs.mainPageUrl);
 
         mainPage = new MainPage(page);
 
         let newsPage = await mainPage.openFirstAutoNews();
-        //await page.goto('https://auto.onliner.by/2024/04/05/voditel-napal-s-bitoj');
-        //await page.pause();
         await newsPage.hoverFirstReactionSection();
         let CurrentReactionCounter = await newsPage.countAstonishedReactions();
         console.log(await newsPage.ReactionSection.isEnabled());
@@ -57,7 +55,6 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
         // Количество соответствующих оценок увеличилось на 1"
         // Нажать на икноку                повторно	Оценка не снялась, кол-во оценок осталось прежним
 
-        await page.pause();
         
         
     })
@@ -75,7 +72,7 @@ test.describe ("Onliner tests without authantication", async () => {
     let headerMenu: HeaderMenu
 
     test.beforeEach(async ({page, context}) => {
-        await page.goto(mainPageUrl);
+        await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
         headerMenu = new HeaderMenu(page)
     })
@@ -155,32 +152,50 @@ test.describe ("Onliner tests without authantication", async () => {
         // Нажать на название найденного товара	Открыта страница товара, название соответствует искомому
         let secondFoundProduntTitle = await allFoundResultLocators[1].innerText();
         await allFoundResultLocators[1].click();
-        //await page.pause();
         await page.locator("//h1[@class='catalog-masthead__title js-nav-header']").waitFor();
         let openedProductTitle = await page.locator("//h1[@class='catalog-masthead__title js-nav-header']").innerText();
         expect(openedProductTitle).toEqual(secondFoundProduntTitle);
     })
 
-    test.only('Catalog page filtering', async ({page})=>{
+    test('Catalog page filtering', async ({page})=>{
         //Открыть https://www.catalog.onliner.by/	
       
         // Перейти в категорию "Компьютеры и сети" ->
         //-> "Ноутбуки и комплектующие" -> "Ноутбуки"	
         //result: Открыта страница каталога "Ноутбуки". Заголовок страницы = "Ноутбуки"
-
         let catalogMainPage = await headerMenu.openCatalog();
         let notebooksPage = await catalogMainPage.openNotebookCatalog();
-
-
-        expect(page.url()).toEqual("https://catalog.onliner.by/notebook")
+        expect(page.url()).toEqual(URLs.NotebookCatalogUrl)
         expect(await notebooksPage.productCatalogTitleText).toContain('Ноутбуки');
-        await page.pause(); 
-        
+        let currentNumOfProducts = await notebooksPage.getNumberOfProducts();
         
         // Установить Производитель = ASUS	В верхней части страницы появился фильтр "ASUS". Уменьшилось число найденных товаров
+        await notebooksPage.checkASUSmaker();
+        expect(notebooksPage.selectedAsusFilter).toBeVisible();
+        currentNumOfProducts = await notebooksPage.getChangedNumOfProducts(currentNumOfProducts);//test is implemented within the method
+       
         // Установить Частота матрицы от 120 до 165 Гц	В верхней части страницы появился фильтр "120 - 165 Гц". Уменьшилось число найденных товаров. Фильтр "ASUS" также присутствует
+        await notebooksPage.setMatrixMinimalHzFilter_120();
+        await expect(notebooksPage.selectedMatrixOptionLocator_120).toBeVisible();
+        await notebooksPage.setMatrixMaxHzFilter_165();
+        await expect(notebooksPage.selectedMatrixOptionLocator_120_165).toBeVisible();
+        await expect(notebooksPage.selectedAsusFilter).toBeVisible();
+        currentNumOfProducts = await notebooksPage.getChangedNumOfProducts(currentNumOfProducts); //test is implemented within the method
+        
         // Применить фильтр "Суперцена"	В верхней части страницы появился фильтр "Суперцена". Отображаются только товары со значком            \
+        await notebooksPage.selectSuperPriceFilter();
+        await expect(notebooksPage.selectedSuperPriceLaber).toBeVisible()
+        expect(notebooksPage.CountAllSuperPricesInProductCount()).toEqual(notebooksPage.countAllProductTiles());
+        
         // Удалить фильтр "ASUS"	Фильтр ASUS удален, все остальные - присутствуют
+        await notebooksPage.checkASUSmaker();
+        expect(notebooksPage.selectedAsusFilter).not.toBeVisible();
+        await expect(notebooksPage.selectedSuperPriceLaber).toBeVisible();
+        expect(notebooksPage.CountAllSuperPricesInProductCount()).toEqual(notebooksPage.countAllProductTiles());
+        await expect(notebooksPage.selectedMatrixOptionLocator_120_165).toBeVisible();
+
+    
+
     })
 
 }) 
