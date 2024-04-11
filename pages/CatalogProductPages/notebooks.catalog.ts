@@ -1,4 +1,4 @@
-import { BaseCatalog } from "./catalog";
+import { BaseCatalog } from "./baseCatalog";
 
 export class NotebookCatalog extends BaseCatalog{
     
@@ -70,22 +70,6 @@ export class NotebookCatalog extends BaseCatalog{
         await this.matrixMaxHz.selectOption(this.optionsMatrix[165]);
     }
    
-
-    // async setMatrixHzFilter_120_165(){
-        
-    //     console.log()
-    //     await this.matrixMinimalHz.selectOption(this.matrixOptions[120]);
-    //     await this.page.locator(this.selectedMatrixOptionLocators[120]).waitFor()
-    //     //await this.page.pause()
-    //     await this.matrixMaxHz.selectOption(this.matrixOptions[165]);
-    //     await this.page.locator(this.selectedMatrixOptionLocators["120-165"]).waitFor()
-
-
-    // }
-
-
-
-
 }
 
 

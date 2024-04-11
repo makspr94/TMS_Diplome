@@ -1,4 +1,6 @@
 import { Page, expect } from "@playwright/test";
+import { BasePage } from "../page";
+import { getInnerNumber} from "../../helpers/getInnerNum";
 
 export class BaseCatalog {
     constructor(protected page: Page) {}
@@ -45,14 +47,11 @@ export class BaseCatalog {
     //METHODS
 
     async getNumberOfProducts(){
-        const matchResult = (await this.numberOfFilteredProducts.innerText()).match(/\d+/);
-        const number = matchResult ? parseInt(matchResult[0], 10) : null
-        return number;
+       return await getInnerNumber(this.numberOfFilteredProducts);
     }
 
     async getChangedNumOfProducts(previousNumOfProducts){
-        const matchResult = (await this.numberOfFilteredProducts.innerText()).match(/\d+/);
-        let changedNumber = matchResult ? parseInt(matchResult[0], 10) : null;
+        let changedNumber = await getInnerNumber(this.numberOfFilteredProducts);
         while (changedNumber == previousNumOfProducts){
             await this.page.waitForTimeout(2000)
             changedNumber = await this.getChangedNumOfProducts(changedNumber);

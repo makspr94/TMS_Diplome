@@ -1,6 +1,5 @@
 import { LoginPage } from "./login.page";
 import { BasePage } from "./page";
-import { QuickSearhFrame } from "./iFrame.page";
 import { NewsPage } from "./news.page";
 
 export class MainPage extends BasePage {

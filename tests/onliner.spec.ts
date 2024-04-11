@@ -5,22 +5,26 @@ import { URLs } from '../data/URLs';
 import { randomEmail } from '../helpers/random';
 import { randomString } from '../helpers/random';
 import { NewsPage } from '../pages/news.page';
-
-
 import fs from 'fs';
 import { HeaderMenu } from '../pages/elements/headerMenu';
 import { CatalogMainPage } from '../pages/catalogMain.page';
+import { ProductPage } from '../pages/CatalogProductPages/productPage.catalog';
+import { PricesPage } from '../pages/CatalogProductPages/prices.catalog';
+import { CartPage } from '../pages/cart.page';
 
 
 //const authFile = 'data/.auth/user.json';
 
 test.describe.configure({mode: 'parallel'});
 
-test.describe ("1. Onliner tests with authonticated user", async () => {
-       let mainPage: MainPage;
-       let headerMenu: HeaderMenu
 
-    test ('login with valid credentials', async ({page, context})=>{
+
+test.describe ("1. Тесты с авторизованным пользователем", async () => {
+    let mainPage: MainPage;
+    let headerMenu: HeaderMenu;
+    let cartPage: CartPage;
+    
+    test ('1. Вход с валидными кредами', async ({page, context})=>{
         await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
         let loginPage = await mainPage.openLoginPage();
@@ -35,13 +39,11 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
        
     })
 
-    test ('3. Reaction icons in AUTO news', async({page, context})=>{
+    test ('3. Пользователь может поставить оценку статье', async({page, context})=>{
 
         const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
-        
         await page.goto(URLs.mainPageUrl);
-
         mainPage = new MainPage(page);
 
         let newsPage = await mainPage.openFirstAutoNews();
@@ -54,10 +56,73 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
         // Нажать на икноку 	"Остальные иконки перестали быть активными (кликабельными)
         // Количество соответствующих оценок увеличилось на 1"
         // Нажать на икноку                повторно	Оценка не снялась, кол-во оценок осталось прежним
-
-        
-        
     })
+
+    test.only ('6. Пользователь может оформить заказ (до оплаты)', async({page, context}) =>{
+         // Открыть https://www.onliner.by/	
+        const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
+        await context.addCookies(cookies);
+        await page.goto(URLs.mainPageUrl);
+        mainPage = new MainPage(page);
+
+       // Открыть страницу товара (ч/з поиск)	Открыта страница товара
+       const searchRequest = "Наушники Bose 45";
+       const searchResultLocator = "//div[@class='result__wrapper']"
+        const searchResultTitleLocator = `${searchResultLocator}//a[contains(@class, 'product__title-link')]`;
+        await mainPage.inputInQuickSearch(searchRequest);
+        const iFrame = await mainPage.SwitchToQuickSearchframe();
+        await iFrame.locator(searchResultTitleLocator).first().waitFor();
+        await iFrame.locator(searchResultTitleLocator).first().click();
+        let productPage = new ProductPage(page);
+        expect(productPage.productTitleH1).toBeVisible();
+        let minimalProductPrice = await productPage.getMainPriceValue();
+        let productTitle = await productPage.productTitleH1.textContent();
+        console.log(productTitle);
+        // Перейти на вкладку "Предложения продавцов"	Открыта вкладка "Предложения продавцов".
+        let pricesPage = await  productPage.clickSellersOffersButton();
+        await expect(pricesPage.sectionOffersList).toBeVisible();
+
+
+        // Нажать "В корзину" для самого выгодного продавца	"В корзине" отображается вместо нажатой кнопки. 1 отображается около значка корзины в верхней части страницы
+        
+        let cartPage = new CartPage(page);
+        await page.pause();
+        await pricesPage.sortOffers_ascending();
+        const firstOfferTile = pricesPage.tileOffer.first();
+        const priceFirstOffetTile = await pricesPage.getPriceInOfferTile(firstOfferTile);
+        
+        
+        console.log(priceFirstOffetTile)
+        await page.pause();
+        await expect(firstOfferTile.locator(pricesPage.orangeButtonAddToCart)).toBeVisible();
+        expect(await firstOfferTile.locator(pricesPage.orangeButtonAddToCart).count()).toEqual(1);// первое предложение имеет кнопку "Добавить в корзину"
+        await firstOfferTile.locator(pricesPage.orangeButtonAddToCart).click();
+        
+        await pricesPage.closeRecommendationSidebar();
+        expect(await firstOfferTile.locator(pricesPage.orangeButtonAddToCart).count()).toEqual(0); //первое предложение не имеет кнопку "Добавить в корзину"
+        await expect(firstOfferTile.locator(pricesPage.greenButtonAddedinCart)).toBeVisible();
+        let headerMenu = new HeaderMenu(page);
+        expect (await headerMenu.getNumberOfCartCounter()).toEqual(1);
+        
+        // Перейти в корзину нажатием на значок корзины	Открыта страница корзины, в ней 1 товар. Его название, цена соответствует цене и названию со страницы товара
+        await headerMenu.openCart();
+        await expect(cartPage.cartBody).toBeVisible();
+        await page.waitForTimeout(4000);
+        await expect(cartPage.cartProductTitle).toBeVisible();
+        expect(await cartPage.cartProductTitle.count()).toEqual(1);
+        console.log(await cartPage.cartProductTitle.textContent());
+        expect(await cartPage.cartProductTitle.textContent()).toContain(productTitle);
+        
+        // Нажать на кнопку "Перейти к оформлению"	Открыта страница "Оформление заказа". Справа отображается товар с корректным именем, ценой
+        // Заполнить поля адреса, поля контактов	
+        // Нажать "Перейти к способу оплаты"	"Открыта страница, на которой представлены 3 способа оплаты: ""Картой онлайн"", ""Халвой онлайн"", ""При получении""
+        // ""Картой при получении"" выбран по-дефолту
+        // Отображается кнопка ""Перейти к подтверждению заказа"""
+        await cartPage.removeAllProducts();
+        await page.pause();
+    })
+        
+    
   
    
 
@@ -67,7 +132,7 @@ test.describe ("1. Onliner tests with authonticated user", async () => {
 
 })
 
-test.describe ("Onliner tests without authantication", async () => {
+test.describe ("тесты без авторизованного пользователя", async () => {
     let mainPage: MainPage; 
     let headerMenu: HeaderMenu
 
@@ -116,7 +181,7 @@ test.describe ("Onliner tests without authantication", async () => {
     })
 
 
-    test('4. Quick search on main page', async ({page})=>{
+    test('4. Пользователь может выполнить поиск', async ({page})=>{
              
         // Ввести в поле поиска "Карты памяти"	Открылся попап поиска, среди результатов поиска присутствует ссылка на соответствующую категорию
         await mainPage.inputInQuickSearch('Карты памяти');
@@ -157,7 +222,7 @@ test.describe ("Onliner tests without authantication", async () => {
         expect(openedProductTitle).toEqual(secondFoundProduntTitle);
     })
 
-    test('Catalog page filtering', async ({page})=>{
+    test('5. Фильтрация страницы каталога', async ({page})=>{
         //Открыть https://www.catalog.onliner.by/	
       
         // Перейти в категорию "Компьютеры и сети" ->
