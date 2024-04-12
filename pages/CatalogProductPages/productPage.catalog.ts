@@ -38,6 +38,10 @@ export class ProductPage extends BaseCatalog{
         return await getInnerNumber(this.mainPrice)
     }
 
+    async getProductTitleText(){
+        return (await this.productTitleH1.innerText()).trim();
+    }
+
 
 
 }

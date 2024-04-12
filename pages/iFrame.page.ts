@@ -1,41 +1,75 @@
+import { ProductPage } from "./CatalogProductPages/productPage.catalog";
 import { BasePage } from "./page";
 import { Page, FrameLocator } from "@playwright/test";
 
 
 export class QuickSearhFrame extends BasePage  {
-    //LOCATOR
-    private quickSearchInputLocator = "//input[contains(@class,'fast-search__input')]";
-    private quickSearchFrameLocator = "//iframe[@src='/sdapi/catalog/search/iframe']";
+    public searchRequest = "Наушники Bose 45";
+    private locatorQuickSearchFrame = "//iframe[@src='/sdapi/catalog/search/iframe']";
+    public iFrame = this.page.frameLocator(this.locatorQuickSearchFrame);
 
+    //LOCATOR
+      
+    private locatorQuickSearchInput = "//input[contains(@class,'fast-search__input')]";
+    
+    
+    private locatorSearchResult = "//div[@class='result__wrapper']"
+    private locatorTitleSearchResult = `${this.locatorSearchResult}//a[contains(@class, 'product__title-link')]`;
+    
     //ELEMENT
 
     get quickSearchInputField (){
-        return this.page.locator(this.quickSearchInputLocator);
+        return this.page.locator(this.locatorQuickSearchInput);
     }
 
-    get QuickSearchFrame(){
-        return this.page.locator(this.quickSearchFrameLocator);
+    get quickSearchFrame(){
+        return this.page.locator(this.locatorQuickSearchFrame);
     }
 
+    // get iFrame () {
+    //     return this.page.frameLocator(this.locatorQuickSearchFrame)}
+
+    
+
+    get titleSearchResult(){
+        return this.page.locator(this.locatorTitleSearchResult);
+    }
+
+
+   
     //METHODS
 
     async inputInQuickSearch(text: string){
         this.quickSearchInputField.fill(text);
+        this.iFrame
+    }
+
+    // switchToQuickSearchframe(){
+    //     return this.page.frameLocator(this.locatorQuickSearchFrame);
+    // }
+
+    async openProductBySearchRequest(searchRequest: string){
+        await this.inputInQuickSearch(searchRequest);
+        await this.iFrame.locator(this.titleSearchResult).first().waitFor();
+        await this.iFrame.locator(this.titleSearchResult).first().click();
+        return new ProductPage(this.page);
+
+
     }
 
 
 
-    async iFrame (){
-        
-
-    }
+    // get iFrame (){
+    //     let iframe = this.switchToQuickSearchframe();
+    //     return iframe
+    // }
     
     
     
-//     static quickSearchFrameLocator = "//iframe[@src='/sdapi/catalog/search/iframe']";
+//     static locatorQuickSearchFrame = "//iframe[@src='/sdapi/catalog/search/iframe']";
 
 //     static async SwitchToQuickSearchframe(){
-//         return this.page.frameLocator(this.quickSearchFrameLocator);
+//         return this.page.frameLocator(this.locatorQuickSearchFrame);
 //     };
 
 //     static getMemCardsSearch(){

@@ -4,6 +4,7 @@ import { BasePage } from "../page";
 import { getInnerNumber } from "../../helpers/getInnerNum";
 import { CartPage } from "../cart.page";
 import { URLs } from "../../data/URLs";
+import { CurrencyPage } from "../currency.page";
 
 export class HeaderMenu extends BasePage {
    
@@ -11,7 +12,7 @@ export class HeaderMenu extends BasePage {
     private locatorButtonCatalog = "//span[contains(@class, 'b-main-navigation__text') and text()='Каталог']"
     private locatorButtonCart = "//a[@class='b-top-profile__cart']"
     private locatorCounterInButtonCart = `${this.locatorButtonCart}//span[@class='b-top-profile__counter']`
-
+    private locatorButtonCurrencyExchange = "//span[@class='_u js-currency-amount']";
     //ELEMENTS 
     get ButtonCatalog(){
         return this.page.locator(this.locatorButtonCatalog);
@@ -21,8 +22,13 @@ export class HeaderMenu extends BasePage {
         return this.page.locator(this.locatorButtonCart);
     }
 
+    
     get counterInButtonCart(){
         return this.page.locator(this.locatorCounterInButtonCart);
+    }
+
+    get buttonCurrencyExchange(){
+        return this.page.locator(this.locatorButtonCurrencyExchange);
     }
 
     //METHODS
@@ -41,6 +47,12 @@ export class HeaderMenu extends BasePage {
     async getNumberOfCartCounter(){
         const number = await getInnerNumber(this.counterInButtonCart);
         return number
+    }
+
+    async openCurrencyExhangePage(){
+        await this.buttonCurrencyExchange.click();
+        await this.page.waitForURL(URLs.currencyExhangeUrl, {waitUntil:"load"});
+        return new CurrencyPage(this.page);
     }
 
 

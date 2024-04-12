@@ -56,7 +56,8 @@ export class PricesPage extends BaseCatalog{
 
     //METHODS
     async sortOffers_ascending(){
-        this.dropdownSortingOffersList.selectOption(this.optionsDropdownSortingOffersList.ascending)
+        this.dropdownSortingOffersList.selectOption(this.optionsDropdownSortingOffersList.ascending);
+        this.page.waitForTimeout(1000);
     }
 
     async clickOrangeButtonFirstOffer(){     
@@ -67,6 +68,7 @@ export class PricesPage extends BaseCatalog{
         await this.page.waitForTimeout(2000);
         if (await this.sectionRecommendedSidebar.isVisible()){
             await this.buttonCloseRecommendedSidebar.click();
+            await this.page.waitForTimeout(2000);
         }
     }
 
