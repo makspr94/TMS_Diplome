@@ -6,5 +6,6 @@ export const URLs = {
     currencyExhangeUrl: "https://kurs.onliner.by/",
     realtPKPageUrl: "https://r.onliner.by/pk/",
     realtAKPageUrl: "https://r.onliner.by/ak/",
+    customerSupportUrl: "https://support.onliner.by/",
 }
 

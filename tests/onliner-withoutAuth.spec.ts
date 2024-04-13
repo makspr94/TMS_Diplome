@@ -13,15 +13,19 @@ import { PricesPage } from '../pages/CatalogProductPages/prices.catalog';
 import { CartPage } from '../pages/cart.page';
 import { QuickSearhFrame } from '../pages/iFrame.page';
 import { randomInt } from 'crypto';
+import { FooterMenu } from '../pages/elements/footerMenu';
 
 test.describe ("тесты без авторизованного пользователя", async () => {
     let mainPage: MainPage; 
     let headerMenu: HeaderMenu;
+    let footerMenu: FooterMenu;
 
     test.beforeEach(async ({page, context}) => {
         await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
-        headerMenu = new HeaderMenu(page)
+        headerMenu = new HeaderMenu(page);
+        footerMenu = new FooterMenu(page);
+        
     })
     
 
@@ -166,39 +170,71 @@ test.describe ("тесты без авторизованного пользов�
         expect(convertionResult).toEqual(bestEurBuyingRate * randomNumber);
     })
 
-    test.only ('8. Работа с каталогом недвижимости', async({page, context}) =>{
-        // Перейти на страницу "Дома и квартиры" -> "Аренда" -> "Минск" (tip: используй hover)	Страница каталога недвижимости открыта, отображается карта
+    test ('8. Работа с каталогом недвижимости', async({page, context}) =>{
+    // Перейти на страницу "Дома и квартиры" -> "Аренда" -> "Минск" (tip: используй hover)	Страница каталога недвижимости открыта, отображается карта
         const realtPage = await headerMenu.openRealtPage();
         await realtPage.clickRentTab();
         let searchResultCounter: any = 0;
         await realtPage.setFilterCityStreet("Минск");
         searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
-        // Выбрать фильтр "Квартира"	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "1к, 2к, 3к, 4к", но не "Комната"
+    // Выбрать фильтр "Квартира"	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "1к, 2к, 3к, 4к", но не "Комната"
         await realtPage.setFilterFlats();
         expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
         searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
         await realtPage.checkAllResultsAreFlats()
-        // Выбрать только 2-комнатные квартиры	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "2к"
+    // Выбрать только 2-комнатные квартиры	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "2к"
         await realtPage.setFilter2Rooms();
         expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
         await realtPage.checkAllResultsAre2Rooms();
         searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
-        // Установить цену до 500$	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, цена в $ которых <= 500$
+    // Установить цену до 500$	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, цена в $ которых <= 500$
         await realtPage.setFilterPriceMax(500);
         expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
         searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
         await realtPage.checkMaxPriceOfResults(500);
-        // Выбрать "Метро" -> "Возле метро"	Кол-во результатов на странице уменьшилось
+    // Выбрать "Метро" -> "Возле метро"	Кол-во результатов на странице уменьшилось
         await realtPage.setFilterMetroNearMetro()
         expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
         searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
-        // Выбрать сортировку "Сначала дорогие"	Первой отображается не та квартира, которая отображалась до сортировки
+    // Выбрать сортировку "Сначала дорогие"	Первой отображается не та квартира, которая отображалась до сортировки
         await realtPage.setSortingExpensiveFirst();
         
+    })
 
+    test.only ('9. Форма поддержки пользователей', async({page, context}) =>{
+    
+// Перейти по ссылке "Поддержка пользователей" в футере главной страницы	Открыта страница "Запрос в службу поддержки"
+        let customerSupportPage = await footerMenu.clickButtonCustomerSupport();
+// Заполнить поле имени	Поле имени заполнено
+        await customerSupportPage.fillInFieldName('Ivan');
+// Очистить поле имени	В поле отображается "Anonymous"
+        await customerSupportPage.clearFieldName();
+
+// Ввести рандомную строку в поле Email, убрать фокус с поля	Поле выделено красным
+        await customerSupportPage.fillFieldEmailRandomString();
+// Ввести корректное (по маске "чтоугодно@что-то.что-то") значение почты, убрать фокус с поля	Выделение снято
+        await customerSupportPage.fillFieldEmailCorrectEmail();
+// Сверить остальные поля и элементы:
+//      Отображаются дропдауны ""Тип проблемы"" и ""Где"", они содержат более 1-го значения
+        await customerSupportPage.checkDrowdownTracker();
+        await customerSupportPage.checkDrowdownCategory();
+//      Отображаются поля ""Краткое описание"", ""Подробное описание""
+       // await customerSupportPage.fieldSubject.click()
+        expect (await customerSupportPage.fieldSubject.count()).toEqual(1);
+        //await customerSupportPage.fieldDescription.click()
+        expect (await customerSupportPage.fieldDescription.count()).toEqual(1);
+
+//      Отображается поле для ввода капчи и капча
+        //await customerSupportPage.fieldCaptcha.click()
+        expect (await customerSupportPage.fieldCaptcha.count()).toEqual(1);
+        //await customerSupportPage.imgCaptcha.click()
+        await expect (customerSupportPage.imgCaptcha).toBeVisible(); 
+//      Отображается и enabled кнопка ""Добавить"""
+        await expect (customerSupportPage.buttonSubmit).toBeEnabled(); 
+
+    });
 
     
-    })
 
 
 

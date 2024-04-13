@@ -89,18 +89,5 @@ export class RegistrationPage extends BasePage {
     }
 
 
-    // async logIn(login: string, password: string) {
-    //     await this.loginField.fill(login);
-    //     await this.passwordField.fill(password);
-    //     await this.logInButton.click();
-    // }
-
-    // async waitCapchaFrameAppears() {
-    //     return await this.captchaFrame.waitFor( { state: "visible", timeout: 5000 });
-    // }
-
-    // async openRegisterForm (){
-    //     await this.registerButton.click();
-    //     return new RegistrationPage(this.page);
-    // }
+   
 }

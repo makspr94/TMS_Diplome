@@ -6,3 +6,10 @@ export const randomHelpers = {
         return random;
     }
 }
+/* 
+use examples:
+randomHelpers.randomString.generate(passwordLenght)
+
+await randomHelpers.randomEmail({domain: 'gmail.com'})
+
+*/
