@@ -5,6 +5,7 @@ import { getInnerNumber } from "../../helpers/getInnerNum";
 import { CartPage } from "../cart.page";
 import { URLs } from "../../data/URLs";
 import { CurrencyPage } from "../currency.page";
+import { realtPage } from "../realt.page";
 
 export class HeaderMenu extends BasePage {
    
@@ -13,6 +14,7 @@ export class HeaderMenu extends BasePage {
     private locatorButtonCart = "//a[@class='b-top-profile__cart']"
     private locatorCounterInButtonCart = `${this.locatorButtonCart}//span[@class='b-top-profile__counter']`
     private locatorButtonCurrencyExchange = "//span[@class='_u js-currency-amount']";
+    private locatorButtonRealtPage = "(//span[text()='Дома и квартиры'])[2]";
     //ELEMENTS 
     get ButtonCatalog(){
         return this.page.locator(this.locatorButtonCatalog);
@@ -29,6 +31,10 @@ export class HeaderMenu extends BasePage {
 
     get buttonCurrencyExchange(){
         return this.page.locator(this.locatorButtonCurrencyExchange);
+    }
+
+    get ButtonRealtPage(){
+        return this.page.locator(this.locatorButtonRealtPage);
     }
 
     //METHODS
@@ -53,6 +59,12 @@ export class HeaderMenu extends BasePage {
         await this.buttonCurrencyExchange.click();
         await this.page.waitForURL(URLs.currencyExhangeUrl, {waitUntil:"load"});
         return new CurrencyPage(this.page);
+    }
+
+    async openRealtPage(){
+        await this.ButtonRealtPage.click();
+        await this.page.waitForURL(URLs.realtPKPageUrl, {waitUntil:"load"});
+        return new realtPage(this.page);
     }
 
 

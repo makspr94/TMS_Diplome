@@ -166,13 +166,38 @@ test.describe ("тесты без авторизованного пользов�
         expect(convertionResult).toEqual(bestEurBuyingRate * randomNumber);
     })
 
-    test ('8. Работа с каталогом недвижимости', async({page, context}) =>{
+    test.only ('8. Работа с каталогом недвижимости', async({page, context}) =>{
         // Перейти на страницу "Дома и квартиры" -> "Аренда" -> "Минск" (tip: используй hover)	Страница каталога недвижимости открыта, отображается карта
+        const realtPage = await headerMenu.openRealtPage();
+        await realtPage.clickRentTab();
+        let searchResultCounter: any = 0;
+        await realtPage.setFilterCityStreet("Минск");
+        searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
         // Выбрать фильтр "Квартира"	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "1к, 2к, 3к, 4к", но не "Комната"
+        await realtPage.setFilterFlats();
+        expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
+        searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
+        await realtPage.checkAllResultsAreFlats()
         // Выбрать только 2-комнатные квартиры	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, помеченные "2к"
+        await realtPage.setFilter2Rooms();
+        expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
+        await realtPage.checkAllResultsAre2Rooms();
+        searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
         // Установить цену до 500$	Кол-во результатов на странице уменьшилось, отображаюстся только объявления, цена в $ которых <= 500$
+        await realtPage.setFilterPriceMax(500);
+        expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
+        searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
+        await realtPage.checkMaxPriceOfResults(500);
         // Выбрать "Метро" -> "Возле метро"	Кол-во результатов на странице уменьшилось
+        await realtPage.setFilterMetroNearMetro()
+        expect (await realtPage.updateResultCounter(searchResultCounter)).toBeLessThan(searchResultCounter);
+        searchResultCounter = await realtPage.updateResultCounter(searchResultCounter);
         // Выбрать сортировку "Сначала дорогие"	Первой отображается не та квартира, которая отображалась до сортировки
+        await realtPage.setSortingExpensiveFirst();
+        
+
+
+    
     })
 
 
