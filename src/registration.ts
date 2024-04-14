@@ -12,12 +12,12 @@ export class RegistrationForm {
 
 
     setEmail (email:string){
-        const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        const emailRegEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/ //allowed symbols in the name: . _ % + -
          if (emailRegEx.test(email)){
             this.email = email
          }
          else{
-            throw error('incorrect Email format');
+            throw new Error('incorrect Email format');
          }
     }
 
@@ -26,7 +26,7 @@ export class RegistrationForm {
             this.password = password
         }
         else{
-            throw error ('The password must contain at least 8 characters including at least one digit')
+            throw new Error ('The password must contain at least 8 characters including at least one digit');
         }
     }
 
@@ -35,16 +35,16 @@ export class RegistrationForm {
             this.username = username
         }
         else{
-            throw error ('username field must be filled')
+            throw new Error ('username field must be filled')
         }
-
     }
+    
     setAge(age: number){
         if (age > 0  && age <150 ){
             this.age = age;
         }
         else {
-            throw error ('incorrect age')
+            throw new Error ('incorrect age')
         }
     }
 
