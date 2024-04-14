@@ -15,7 +15,7 @@ import { QuickSearhFrame } from '../pages/iFrame.page';
 
 //const authFile = 'data/.auth/user.json';
 
-test.describe.configure({mode: 'parallel'});
+test.describe.configure({mode: 'serial'});
 
 
 
@@ -40,25 +40,28 @@ test.describe ("1. Тесты с авторизованным пользоват
        
     })
 
-    test.only ('3. Пользователь может поставить оценку статье', async({page, context})=>{
+    test ('3. Пользователь может поставить оценку статье', async({page, context})=>{
 
         const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
-
-        const newsPage = await mainPage.openFirstAutoNews();
-        const reactionSectionById = await newsPage.findFirstActiveReactionSection();
-        await page.pause();
-        let CurrentReactionCounter = await newsPage.countAstonishedReactions(reactionSectionById);
-        await page.pause();
-        console.log(await newsPage.ReactionSection.isEnabled());
-        await newsPage.clickReaction();
-        console.log(await newsPage.ReactionSection.isDisabled());
         
-        // Нажать на икноку 	"Остальные иконки перестали быть активными (кликабельными)
-        // Количество соответствующих оценок увеличилось на 1"
-        // Нажать на икноку                повторно	Оценка не снялась, кол-во оценок осталось прежним
+        //Открыть первую статью в категории "Авто" -> Страница статьи открыта
+        const newsPage = await mainPage.openFirstAutoNews();
+        const locatorReactionSectionById = await newsPage.findFirstActiveReactionSection();
+        const locatorAstonishedReaction = locatorReactionSectionById + newsPage.locatorAstonishedReaction;
+        let initialReactionCounter:number = +(await newsPage.countAstonishedReaction(locatorReactionSectionById)); 
+        
+        // Нажать на икноку -> "стальные иконки перестали быть активными (кликабельными). Количество соответствующих оценок увеличилось на 1"
+        await newsPage.clickReactionAstonished(locatorReactionSectionById);
+        expect(await newsPage.getClassName(locatorReactionSectionById)).toContain('st-reacted');
+        expect(+(await newsPage.countAstonishedReaction(locatorReactionSectionById))).toEqual(initialReactionCounter+1);
+
+        // Нажать на икноку повторно ->  Оценка не снялась, кол-во оценок осталось прежним
+        await newsPage.clickReactionAstonished(locatorReactionSectionById);
+        expect(await newsPage.getClassName(locatorAstonishedReaction)).toContain('st-selected')
+        expect(+(await newsPage.countAstonishedReaction(locatorReactionSectionById))).toEqual(initialReactionCounter+1);
     })
 
     test ('6. Пользователь может оформить заказ (до оплаты)', async({page, context}) =>{
@@ -67,10 +70,11 @@ test.describe ("1. Тесты с авторизованным пользоват
         const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         await page.goto(URLs.mainPageUrl);
-
+        
         //Открыть страницу товара (ч/з поиск)
         quickSearch = new QuickSearhFrame(page);
         let cartPage = new CartPage(page);
+        await cartPage.removeAllProducts();
         const productPage =  await quickSearch.openProductBySearchRequest("Наушники Bose 45");
         expect(productPage.productTitleH1).toBeVisible();
         let productTitle = await productPage.getProductTitleText();
@@ -84,7 +88,7 @@ test.describe ("1. Тесты с авторизованным пользоват
         const firstOfferTile = pricesPage.tileOffer.first();
         const priceFirstOffetTile = await pricesPage.getPriceInOfferTile(firstOfferTile);
         await expect(firstOfferTile.locator(pricesPage.orangeButtonAddToCart)).toBeVisible();
-        expect(firstOfferTile.locator(pricesPage.orangeButtonAddToCart).count()).toEqual(1);// первое предложение имеет кнопку "Добавить в корзину"
+        expect(await firstOfferTile.locator(pricesPage.orangeButtonAddToCart).count()).toEqual(1);// первое предложение имеет кнопку "Добавить в корзину"
         await firstOfferTile.locator(pricesPage.orangeButtonAddToCart).click();
         await pricesPage.closeRecommendationSidebar();
         expect(await firstOfferTile.locator(pricesPage.greenButtonAddedinCart).count()).toEqual(1);

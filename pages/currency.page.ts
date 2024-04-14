@@ -10,7 +10,7 @@ export class CurrencyPage extends BasePage{
     private locatorButtonBuy = "//label[@for='buy']";
     private locatorInputConverter = "//div[@class='amount-i']//input[1]";
     private locatorConvertionResult = "//*[contains(@class,'js-cur-result')]";
-    private LocatorEurBestBuyingRate = "(//p[@class='value fall']//b)[4]";  
+    private LocatorEurBestBuyingRate = "(//p[contains(@class, 'value')]//b)[5]";  
     private locatorDropdownTypesCurrencyIn = "//li[@class='select']//select[1]";
     private optionsTypesCurrencyIn = {
         USD: "usd",

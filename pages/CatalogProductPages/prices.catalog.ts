@@ -73,8 +73,8 @@ export class PricesPage extends BaseCatalog {
     }
 
     async getPriceInOfferTile(elementOfferTile:Locator){
-
-        let price = getInnerNumber(elementOfferTile.locator(this.priceInOfferTile));
+        await elementOfferTile.waitFor({state:"visible"});
+        let price = await getInnerNumber(elementOfferTile.locator(this.priceInOfferTile));
         return price
     }
 

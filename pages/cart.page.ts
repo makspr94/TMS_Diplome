@@ -1,9 +1,8 @@
 import { expect } from "@playwright/test";
 import { URLs } from "../data/URLs";
 import { getInnerNumber } from "../helpers/getInnerNum";
-import { HeaderMenu } from "./elements/headerMenu";
 import { BasePage } from "./page";
-import { checkOutAdress } from "../data/userData";
+
 
 
 export class CartPage extends BasePage {
@@ -92,13 +91,14 @@ export class CartPage extends BasePage {
         if (this.page.url() != URLs.CartPageUrl) {
             await this.page.goto(URLs.CartPageUrl, {waitUntil: "load"});
             await this.cartBody.waitFor({state:"visible"});
-            await this.page.waitForTimeout(4000);
+            await this.page.waitForTimeout(2000);
         }
         console.log(await this.cartProductTitle.count())
         if ((await this.cartProductTitle.count()) > 0){
             while ((await this.cartProductTitle.count()) > 0) {
                 await this.buttonRemoveProduct.first().hover({force:true});
                 await this.buttonRemoveProduct.first().click({force:true});
+                await this.page.waitForTimeout(1000);
             }
         }
         await this.page.goBack()
@@ -132,15 +132,6 @@ export class CartPage extends BasePage {
         await this.checkboxPaymentTypeCard.check();
     }
 
-    // async fillInCheckoutForm(){
-    //     if (await this.formPrefilledAddress.count()==0){
-    //         await this.page.pause()
-    //         await this.fieldStreet.fill(checkOutAdress.street);
-    //         await this.fieldBuilding.fill(checkOutAdress.building);
-    //         await this.fieldName.fill(checkOutAdress.name);
-    //         await this.fieldPhoneNum.fill(checkOutAdress.phoneNumber);
-    //     }
-    // }
 
    
 }
