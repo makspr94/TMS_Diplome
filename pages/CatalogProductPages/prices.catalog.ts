@@ -2,7 +2,7 @@ import { Locator } from "@playwright/test";
 import { getInnerNumber } from "../../helpers/getInnerNum";
 import { BaseCatalog } from "./baseCatalog";
 
-export class PricesPage extends BaseCatalog{
+export class PricesPage extends BaseCatalog {
     //LOCATORS
     private locatorSectionOfferList = "//div[@class='offers-filter__part offers-filter__part_2']"
     private locatorDropdownSortingOffersList = "//select[@class='input-style__real']";

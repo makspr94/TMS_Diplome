@@ -5,7 +5,7 @@ export class NotebookCatalog extends BaseCatalog{
     
 
     //LOCATORS
-    private makerASUScheckboxLocator = `${this.FilterMakerListLocator}//div[contains(@class, 'i-checkbox catalog-form__checkbox catalog-form__checkbox_base')][descendant::div[contains(text(), 'ASUS')]]`
+    private makerASUScheckboxLocator = `${this.locatorFilterMakerList}//div[contains(@class, 'i-checkbox catalog-form__checkbox catalog-form__checkbox_base')][descendant::div[contains(text(), 'ASUS')]]`
     private selectedAsusFilterLocator = "//div[@class ='button-style button-style_either button-style_small catalog-form__button catalog-form__button_tag' and contains(text(), 'ASUS')]";
     
     private matrixHzFilterLocator = "//div[contains(@class, 'catalog-form__group catalog-form__group_nonadaptive catalog-form__group_width_full')][descendant::div[contains(text(), 'Частота матрицы')]]";

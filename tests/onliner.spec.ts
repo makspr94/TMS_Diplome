@@ -40,16 +40,18 @@ test.describe ("1. Тесты с авторизованным пользоват
        
     })
 
-    test ('3. Пользователь может поставить оценку статье', async({page, context})=>{
+    test.only ('3. Пользователь может поставить оценку статье', async({page, context})=>{
 
         const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
 
-        let newsPage = await mainPage.openFirstAutoNews();
-        await newsPage.hoverFirstReactionSection();
-        let CurrentReactionCounter = await newsPage.countAstonishedReactions();
+        const newsPage = await mainPage.openFirstAutoNews();
+        const reactionSectionById = await newsPage.findFirstActiveReactionSection();
+        await page.pause();
+        let CurrentReactionCounter = await newsPage.countAstonishedReactions(reactionSectionById);
+        await page.pause();
         console.log(await newsPage.ReactionSection.isEnabled());
         await newsPage.clickReaction();
         console.log(await newsPage.ReactionSection.isDisabled());

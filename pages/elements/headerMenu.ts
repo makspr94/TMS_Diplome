@@ -41,6 +41,7 @@ export class HeaderMenu extends BasePage {
 
     async openCatalog(){
         this.ButtonCatalog.click();
+        await this.page.waitForURL(URLs.catalogUrl, {waitUntil:"load"});
         return new CatalogMainPage(this.page);
     }
     

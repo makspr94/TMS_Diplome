@@ -4,7 +4,8 @@ export class NewsPage extends BasePage {
     //LOCATORS
     private newsItemLocator = "//a[contains(@class, 'news-tidings__stub')]";
     private reactionSectionLocator = "//div[contains(@class, 'sharethis-inline-reaction-buttons st-inline-reaction-buttons st-justified  st-has-labels st-lang-ru')]";
-    private astonishedReactionLocator = `${this.reactionSectionLocator}//div[contains(@data-reaction, 'astonished')]`
+    private astonishedReactionLocator = `${this.reactionSectionLocator}//div[@class='st-btn' and contains(@data-reaction, 'astonished')]`
+    private selectedAstonishedReactionLocator = `${this.reactionSectionLocator}//div[@class='st-btn st-selected' and contains(@data-reaction, 'astonished')]`
     private astonishedReactionCounterLocator = `${this.astonishedReactionLocator}//span[contains(@class,'st-count')]`
     //ELEMENTS
     get newsItem(){
@@ -23,6 +24,10 @@ export class NewsPage extends BasePage {
         return this.page.locator(this.astonishedReactionCounterLocator);
     }
 
+    get selectedAstonishedReaction (){
+        return this.page.locator(this.selectedAstonishedReactionLocator);
+    }
+
     //METHODS
 
     async getAllNewsItems(){
@@ -34,14 +39,18 @@ export class NewsPage extends BasePage {
         await this.newsItem.first().click();
     }
 
-    async hoverFirstReactionSection(){
-        this.scrollUntilReactionSection();
-        this.ReactionSection.scrollIntoViewIfNeeded();
-        this.ReactionSection.hover();
+    async findFirstActiveReactionSection(){
+        await this.scrollUntilReactionSection();
+        await this.ReactionSection.scrollIntoViewIfNeeded();
+        const id = await this.ReactionSection.getAttribute('id');
+        const reactionSectionById = this.page.locator(`//div[@id='${id}']`);
+        return reactionSectionById;
+        
+
     } 
 
-    async countAstonishedReactions(){
-        return await this.astonishedReactionCounter.innerText();
+    async countAstonishedReaction(reactionSectionById){
+        return await this.astonishedReactionCounter.first().innerText();
     }
 
     async clickReaction(){
@@ -58,9 +67,8 @@ export class NewsPage extends BasePage {
                 foundReactionSection = true;
             } else {
                 // Прокручиваем страницу вниз
-                await this.page.evaluate(() => {
-                    window.scrollBy(0, window.innerHeight);
-                });
+               await this.page.keyboard.press("PageDown");
+                
             }
         }
     }
