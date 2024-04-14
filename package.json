@@ -9,4 +9,5 @@
   },
   "scripts": {
     "format_code": "prettier --write \"**/*.ts\""
+  }
 }
