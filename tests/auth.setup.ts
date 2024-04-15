@@ -7,7 +7,7 @@
 // const authFile = 'data/.auth/user.json';
 
 // test.describe ("Onliner test", async () => {
-    
+
 //     let page: Page;
 //     let mainPage: MainPage;
 
@@ -29,21 +29,13 @@
 //         await expect(mainPage.userAvatar).toBeVisible({timeout:0});
 //         await page.context().storageState({path:authFile});
 
-        
-        
 //         await page.waitForTimeout(5000);
 
- 
-
 //         /*
-        
-//         Ввести email и пароль	
+
+//         Ввести email и пароль
 //         Нажать кнопку "Войти"	-> Появилось окошко для ввода капчи*/
-        
+
 //     })
-
-
-
-
 
 // })
