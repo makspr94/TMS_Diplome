@@ -13,13 +13,13 @@ import { CartPage } from '../pages/cart.page';
 import { QuickSearhFrame } from '../pages/iFrame.page';
 
 
-//const authFile = 'data/.auth/user.json';
+//const authFile = 'data/auth/user.json';
 
 test.describe.configure({mode: 'serial'});
 
 
 
-test.describe ("1. Тесты с авторизованным пользователем", async () => {
+test.describe.only ("1. Тесты с авторизованным пользователем", async () => {
     let mainPage: MainPage;
     let headerMenu: HeaderMenu;
     let cartPage: CartPage;
@@ -34,15 +34,14 @@ test.describe ("1. Тесты с авторизованным пользоват
         await page.bringToFront();
         await page.pause(); //pause for CAPTCHA
         await expect(mainPage.userAvatar).toBeVisible();
-        //await page.context().storageState({path:authFile});
         const cookies = await page.context().cookies();
-        fs.writeFileSync('./data/.auth/cookies.json', JSON.stringify(cookies));
+        fs.writeFileSync('./data/auth/cookies.json', JSON.stringify(cookies));
        
     })
 
     test ('3. Пользователь может поставить оценку статье', async({page, context})=>{
 
-        const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
+        const cookies = JSON.parse(fs.readFileSync('./data/auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         await page.goto(URLs.mainPageUrl);
         mainPage = new MainPage(page);
@@ -67,7 +66,7 @@ test.describe ("1. Тесты с авторизованным пользоват
     test ('6. Пользователь может оформить заказ (до оплаты)', async({page, context}) =>{
          // Открыть https://www.onliner.by/	
         test.setTimeout(150000);
-        const cookies = JSON.parse(fs.readFileSync('./data/.auth/cookies.json', 'utf8'));
+        const cookies = JSON.parse(fs.readFileSync('./data/auth/cookies.json', 'utf8'));
         await context.addCookies(cookies);
         await page.goto(URLs.mainPageUrl);
         

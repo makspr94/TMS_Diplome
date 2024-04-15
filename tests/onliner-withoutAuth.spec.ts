@@ -149,7 +149,7 @@ test.describe ("тесты без авторизованного пользов�
         await expect(notebooksPage.selectedMatrixOptionLocator_120_165).toBeVisible();
     })
 
-    test.only ('7. Конвертер валют', async({page, context}) =>{
+    test ('7. Конвертер валют', async({page, context}) =>{
         test.setTimeout(150000);
         //На главной странице нажать на ссылку с курсом доллара	Открыта страница "Лучшие курсы валют", отображается сегодняшняя дата, разделы курсов для USD, EUR, RUB
         let currencyPage = await headerMenu.openCurrencyExhangePage();
