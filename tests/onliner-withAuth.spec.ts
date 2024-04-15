@@ -16,7 +16,7 @@ import { QuickSearhFrame } from "../pages/iFrame.page";
 
 test.describe.configure({ mode: "serial" });
 
-test.describe.only("1. Тесты с авторизованным пользователем", async () => {
+test.describe ("1. Тесты с авторизованным пользователем", async () => {
   let mainPage: MainPage;
   let headerMenu: HeaderMenu;
   let cartPage: CartPage;
