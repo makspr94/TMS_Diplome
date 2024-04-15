@@ -73,6 +73,7 @@ export class BaseCatalog {
 
   async selectSuperPriceFilter() {
     await this.superPriceFilter.click();
+    await this.page.waitForTimeout(3000);
   }
 
   async countAllProductTiles() {

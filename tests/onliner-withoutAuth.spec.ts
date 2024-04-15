@@ -133,7 +133,7 @@ test.describe("тесты без авторизованного пользова
     expect(openedProductTitle).toEqual(secondFoundProduntTitle);
   });
 
-  test("5. Фильтрация страницы каталога", async ({ page }) => {
+  test ("5. Фильтрация страницы каталога", async ({ page }) => {
     //Открыть https://www.catalog.onliner.by/
 
     // Перейти в категорию "Компьютеры и сети" ->
@@ -163,10 +163,11 @@ test.describe("тесты без авторизованного пользова
       await notebooksPage.getChangedNumOfProducts(currentNumOfProducts); //test is implemented within the method
 
     // Применить фильтр "Суперцена"	В верхней части страницы появился фильтр "Суперцена". Отображаются только товары со значком            \
+    await page.pause()
     await notebooksPage.selectSuperPriceFilter();
     await expect(notebooksPage.selectedSuperPriceLaber).toBeVisible();
-    expect(notebooksPage.countAllSuperPricesInProduct()).toEqual(
-      notebooksPage.countAllProductTiles(),
+    expect(await notebooksPage.countAllSuperPricesInProduct()).toEqual(
+      await notebooksPage.countAllProductTiles(),
     );
 
     // Удалить фильтр "ASUS"	Фильтр ASUS удален, все остальные - присутствуют
