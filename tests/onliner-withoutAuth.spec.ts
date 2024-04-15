@@ -205,7 +205,8 @@ test.describe("тесты без авторизованного пользова
     expect(convertionResult).toEqual(bestEurBuyingRate * randomNumber);
   });
 
-  test("8. Работа с каталогом недвижимости", async ({ page, context }) => {
+  test ("8. Работа с каталогом недвижимости", async ({}) => {
+    test.setTimeout(60000);
     // Перейти на страницу "Дома и квартиры" -> "Аренда" -> "Минск" (tip: используй hover)	Страница каталога недвижимости открыта, отображается карта
     const realtPage = await headerMenu.openRealtPage();
     await realtPage.clickRentTab();

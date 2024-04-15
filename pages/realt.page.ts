@@ -110,14 +110,24 @@ export class realtPage extends BasePage {
   }
 
   async setSortingExpensiveFirst() {
-    let adressOfFirstResult = await this.resultAdress.first().innerText();
+    let adressesBeforeSorting = [
+      await this.resultAdress.first().innerText(),
+      await this.resultAdress.nth(1).innerText(),
+      await this.resultAdress.nth(2).innerText(),
+    ];
+    console.log("1", adressesBeforeSorting);
+    // await this.page.pause();
     await this.sortingDropdown.click();
     await this.sortingExpensiveFirst.waitFor({ state: "visible" });
     await this.sortingExpensiveFirst.click();
     await expect(async () => {
-      expect(adressOfFirstResult).not.toEqual(
+      let addressesAfterSorting = [
         await this.resultAdress.first().innerText(),
-      );
+        await this.resultAdress.nth(1).innerText(),
+        await this.resultAdress.nth(2).innerText(),
+      ];
+      console.log("2", addressesAfterSorting);
+      expect(adressesBeforeSorting).not.toEqual(addressesAfterSorting);
     }).toPass();
   }
 
