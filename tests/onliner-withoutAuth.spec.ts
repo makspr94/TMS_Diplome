@@ -134,6 +134,7 @@ test.describe("тесты без авторизованного пользова
   });
 
   test ("5. Фильтрация страницы каталога", async ({ page }) => {
+    test.setTimeout(150000);
     //Открыть https://www.catalog.onliner.by/
 
     // Перейти в категорию "Компьютеры и сети" ->
@@ -163,7 +164,6 @@ test.describe("тесты без авторизованного пользова
       await notebooksPage.getChangedNumOfProducts(currentNumOfProducts); //test is implemented within the method
 
     // Применить фильтр "Суперцена"	В верхней части страницы появился фильтр "Суперцена". Отображаются только товары со значком            \
-    await page.pause()
     await notebooksPage.selectSuperPriceFilter();
     await expect(notebooksPage.selectedSuperPriceLaber).toBeVisible();
     expect(await notebooksPage.countAllSuperPricesInProduct()).toEqual(
@@ -307,7 +307,5 @@ test.describe("тесты без авторизованного пользова
     // Кликнуть на появившийся поп-ап с названием "2 товара в сравнении"	"Пользователь должен быть перенаправлен на страницу ""Сравнение товаров"" и увидеть на странице 2 телевизора, которые выбирал ранее.
     await productPage.clickOnComparisonPopup();
     //  Отличающиеся характеристики должны быть подсвечены оранжевым цветом."
-
-    await page.pause();
   });
 });
